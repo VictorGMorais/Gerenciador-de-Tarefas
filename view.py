@@ -11,9 +11,8 @@ while True:
 1 - Adicionar Nova Tarefa
 2 - Marcar Tarefa Como Concluida
 3 - Remove Uma Tarefa
-4 - Lista Tarefas [Pendentes / Concluidas]          
-5 - Lista Tarefas Por Prioridade [baixa / media / alta]  
-6 - Sair                  
+4 - Lista Tarefas [...]  
+5 - Sair                  
 \n""")
     
     while True:
@@ -21,7 +20,7 @@ while True:
         if opcao.isdigit() and 1 <= int(opcao) <= 6:
             break
         else:
-            print('opção invalida! informe um numero de 1 a 6 referente as opçoes')
+            print('Opção invalida! informe um numero de 1 a 6 referente as opçoes')
     
     if opcao == '1':
             nova_tarefa = input('Nova Tarefa: ').strip().lower()
@@ -31,8 +30,15 @@ while True:
                     if add_prioridade not in ['baixa','media', 'alta']:
                         print('Prioridade invalida! opçoes validas [baixa / media / alta]')
                         continue
+                    while True:
+                        print(f'{"CATEGORIAS VALIDAS!":^48}\n["Financeiro", "RH", "TI", "Marketing", "Outro"]')
+                        add_categoria = input('Categoria: ').strip().lower()
+                        if add_categoria not in ["financeiro", "rh", "ti", "marketing", "outro"]:
+                            print('Categoria invalida!')
+                            continue
+                        break
                     break
-                tarefa_adicionar = Tarefas(nova_tarefa,add_prioridade)
+                tarefa_adicionar = Tarefas(nova_tarefa,add_prioridade,add_categoria)
                 menu.adicionar_tarefa(tarefa_adicionar)
                 limpar_tela()
                 linha()
@@ -95,25 +101,56 @@ while True:
             
     if opcao == '4':
         limpar_tela()
-        menu.exibir_tarefas()
-        voltar = input('Press qualquer tecla para voltar ao menu! : ')
-        limpar_tela()
-        
-    if opcao == '5':
-        limpar_tela()
         while True:
-            tarefa_prioridade = input('Prioridade do Filtro [baixa , media , alta]: ').strip().lower()
-            if tarefa_prioridade in ['baixa','media','alta']:
-                break
-            else:
+            
+            print("""LISTAR POR!
+[1] Todas
+[2] Prioridade
+[3] Categoria""")
+            opcao = input('Opção : ').strip().lower()
+            if opcao not in ['1','2','3']:
+                print('Opção invalida! informe um numero de 1 a 3 referente as opçoes')
+                continue
+
+            elif opcao == '1':
                 limpar_tela()
-                print('digite uma prioridade valida! [baixa / media / alta]')
-        menu.exibir_tarefa_prioridade(tarefa_prioridade)
+                menu.exibir_tarefas()
+                voltar = input('Press qualquer tecla para voltar ao menu! : ')
+                limpar_tela()
+                break
 
-        if not menu._banco_dados.get(tarefa_prioridade, 0):
-            voltar = input('Sem resultados! PRESS qualquer tecla para voltar ao menu! :  ')
-            limpar_tela()
+            elif opcao  == '2':
+                while True:
+                    tarefa_prioridade = input('Prioridade do Filtro [baixa , media , alta]: ').strip().lower()
+                    if tarefa_prioridade in ['baixa','media','alta']:
+                        limpar_tela()
+                        menu.exibir_tarefa_prioridade(tarefa_prioridade)
+                        voltar = input('PRESS qualquer tecla para voltar')
+                        break
+                    else:
+                        limpar_tela()
+                        print('digite uma prioridade valida! [baixa / media / alta]\n')
+                    
+                    if menu._banco_dados.get(tarefa_prioridade, 0):
+                        voltar = input('Sem resultados! PRESS qualquer tecla para voltar ao menu! :  ')  
+                break
+            
+            elif opcao == '3': #daria para so usar um else. mas poderia ficar confuso no futuro para modificar
+                limpar_tela()
+                while True:
+                    print(f'{"CATEGORIAS VALIDAS!":^48}\n["Financeiro", "RH", "TI", "Marketing", "Outro"]')
+                    tarefa_categoria = input('Categoria : ').strip().lower()
+                    if tarefa_categoria not in ["financeiro", "rh", "ti", "marketing", "outro"]:
+                        print('Categoria invalida!')
+                        continue
+                    menu.exibir_tarefa_categoria(tarefa_categoria)
+                    voltar = input('PRESS qualquer tecla para voltar ao menu! :  ')
+                    limpar_tela()
+                    break
+                break 
 
-    if opcao == '6':
+    if opcao == '5':
         print('ENCERRANDO GERENCIAMENTO DE TEREFAS........')
         break
+
+        
